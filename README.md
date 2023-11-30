@@ -2,22 +2,22 @@ A schema library for Ruby that allows you to quickly build up classes with a def
 created to helps streamline validation, accessors, and other things that I was doing over and over again while
 building out API services.
 
-# Samples of how to use
+# Schema: Samples of how to use
 
 ## Basic Samples
 
 ### Defining and applying the schema
 ```ruby
 class BasicClass
-  @@schema = Schema.new
-  @@schema.key = "numbers"
-  @@schema.display_name = "Number Aggregation"
-  @@schema.fields = {
+  schema = Schema.new
+  schema.key = "numbers"
+  schema.display_name = "Number Aggregation"
+  schema.fields = {
     "name" => {:required => false, :type => String, :display_name => 'Name'},
     "numbers" => {:required => false, :type => Array, :subtype => Integer, :display_name => 'Numbers'},
     "squares_table" => {:required => false, :type => Hash, :subtype => Integer, :display_name => 'Squares Table'}
   }
-  @@schema.apply_schema(self)
+  apply_schema schema
 end
 ```
 
@@ -56,14 +56,14 @@ puts "#{instance.to_object}"
 ### Validation
 ```ruby
 class RequiredSample
-  @@schema = Schema.new
-  @@schema.key = "required_sample"
-  @@schema.display_name = "Required Sample"
-  @@schema.fields = {
+  schema = Schema.new
+  schema.key = "required_sample"
+  schema.display_name = "Required Sample"
+  schema.fields = {
     "name" => {:required => true, :type => String},
     "num" => {:required => true, :type => Array, :subtype => Integer}
   }
-  @@schema.apply_schema(self)
+  apply_schema schema
 end
 
 # Top Level fields will error out on validate call
@@ -84,14 +84,14 @@ instance.validate
 ### Type Ref
 ```ruby
 class TypeRefSample
-  @@schema = Schema.new
-  @@schema.key = "typeref_sample"
-  @@schema.display_name = "Type Ref Sample"
-  @@schema.fields = {
+  schema = Schema.new
+  schema.key = "typeref_sample"
+  schema.display_name = "Type Ref Sample"
+  schema.fields = {
     "item" => {:required => false, :type => Item, :type_ref => true},
     "items" => {:required => false, :type => Array, :subtype => Item, :type_ref => true}
   }
-  @@schema.apply_schema(self)
+  apply_schema schema
 end
 
 instance = TypeRefSample.new
@@ -123,6 +123,35 @@ instance.add_item(existing_array_item)
 instance.add_item(new_array_item)
 instance.add_item(existing_array_item_id)
 # The same principles apply to collection fields as well!
+```
+
+# Schema Storage: Samples of how to use
+Currently, the schema storage portion of the library is a way to store and retrieve
+these schema objects. The storage is currently built on top of a file system with a
+local cache, but it was built with the intention of being able to be swapped for a
+json database and an external cache in the future.
+
+The accessors are applied to each of the schema objects. `:get`, `:list`, and `:exist?`
+are used as class methods (e.g. `BasicSchemaClass.get('anId')` or `BasicSchemaClass.list()`).
+While `:save!` and `:delete!` are used as instance methods (e.g. `instance.save!` or `instance.delete!`).
+
+## Basic Samples
+
+### Defining and applying the schema
+```ruby
+storage = SchemaStorage.new('data')
+class BasicSchemaClass
+  schema = Schema.new
+  schema.key = "basic-schema"
+  schema.display_name = "Basic Schema"
+  schema.storage = storage
+  schema.accessors = [:get, :list, :exist?, :save!, :delete!]
+  schema.fields = {
+    "name" => {:required => false, :type => String, :display_name => 'Name'},
+    "key" => {:required => false, :type => String, :display_name => 'Key'}
+  }
+  apply_schema schema
+end
 ```
 
 

@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 require 'mocha/minitest'
 require 'rack/test'
-require_relative './integration_setup.rb'
+require_relative './tegration_setup.rb'
 
 class IntegrationTest < Minitest::Test
 

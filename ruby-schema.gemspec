@@ -30,5 +30,5 @@ the space of referring to the whole object when you just need the id.
   end
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
-  spec.require_paths = ["src"]
+  spec.require_paths = ["lib"]
 end

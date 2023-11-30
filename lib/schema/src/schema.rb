@@ -2,11 +2,13 @@ require_relative './field_types'
 require_relative './field'
 require_relative './errors'
 
-## Once schema is loaded, this lets us check on all classes whether an object
-## is a schema class or not. For schema classes, this will be true.
 class Object
   def is_schema_class?
-    return false
+    false
+  end
+
+  def apply_schema(schema)
+    schema.apply(self)
   end
 end
 
@@ -18,9 +20,9 @@ class Schema
     @fields = []
   end
 
-  def apply_schema(clazz)
+  def apply(clazz)
     schema_self = self
-    convert_fields_to_field_classes()
+    convert_fields_to_field_classes
     BaseFields.apply(clazz, schema_self)
     TopLevelFields.apply(clazz, schema_self)
     ArrayFields.apply(clazz, schema_self)
