@@ -1,6 +1,7 @@
 require_relative './field_types'
 require_relative './field'
 require_relative './errors'
+require_relative './custom_types'
 
 class Object
   def is_schema_class?
