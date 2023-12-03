@@ -3,6 +3,7 @@ require_relative '../errors'
 module CrudMethods
 
   def self.apply(clazz, storage, methods)
+    return if methods.nil?
     methods.each do |method|
       case method
       when :get

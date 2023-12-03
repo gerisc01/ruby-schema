@@ -1,3 +1,4 @@
+require 'set'
 require_relative '../field'
 require_relative '../helpers/field_helpers'
 require_relative '../helpers/type_ref'
