@@ -44,4 +44,14 @@ class TopLevelFieldsTest < Minitest::Test
     end
   end
 
+  def test_setter_type_ref
+    @top_level_class = Class.new
+    TestHelpers.create_schema_with_fields(@top_level_class, {'ref' => {:type => @test_class, :type_ref => true}})
+    @test_class.stubs(:exist?).with('1').returns(true)
+    top_level_instance = @top_level_class.new
+    instance = @test_class.new({'id' => '1', 'req' => 75})
+    top_level_instance.ref = instance
+    assert_equal instance.id, top_level_instance.ref
+  end
+
 end

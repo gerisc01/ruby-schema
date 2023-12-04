@@ -53,7 +53,7 @@ module Validators
 
   def self.subtype_collection_value_check(field, value, hash_key = nil)
     return if general_type_check(field.subtype, value)
-    return if type_ref_check(field, value)
+    return if type_ref_exists(field, value)
     message = "'#{field.key}' is expecting a collection containing "
     message += "type refs of ids or objects for " if field.type_ref
     message += "'#{field.subtype}' types but found '#{value.class.to_s}'"

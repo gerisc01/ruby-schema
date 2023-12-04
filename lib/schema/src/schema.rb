@@ -33,7 +33,14 @@ class Schema
   def validate(instance)
     @fields.each do |field|
       begin
-        v = instance.public_send(field.key)
+        if instance.respond_to?(field.key)
+          v = instance.public_send(field.key)
+        else
+          # To validate a field that doesn't have an accessor, we'll check
+          # if the value is stored as a top level field in the json
+          v = TopLevelFields.get_field_from_object(field, instance)
+        end
+        v = instance.public_send(field.key) if instance.respond_to?(field.key)
         field.validate(v)
       rescue Schema::ValidationError => e
         raise Schema::ValidationError, "Invalid #{@display_name || @key}: #{e.message}"

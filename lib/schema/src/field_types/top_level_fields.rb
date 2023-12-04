@@ -18,9 +18,7 @@ module TopLevelFields
 
   def self.field_getter(clazz, field)
     clazz.define_method(field.key.to_sym) do
-      self.json = {} if json.nil?
-      value = FieldHelpers.generic_to_field_type(field, self.json[field.key])
-      return value
+      return TopLevelFields.get_field_from_object(field,self)
     end
   end
 
@@ -39,6 +37,12 @@ module TopLevelFields
       self.json = {} if json.nil?
       self.json[field.key] = FieldHelpers.field_type_to_generic(field, value)
     end
+  end
+
+  def self.get_field_from_object(field, obj)
+    json = obj.json.nil? ? {} : obj.json
+    value = FieldHelpers.generic_to_field_type(field, json[field.key])
+    return value
   end
 
 end

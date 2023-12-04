@@ -1,7 +1,7 @@
 module FieldHelpers
 
   def self.generic_to_field_type(field, value)
-    if field.type.is_schema_class?
+    if field.type.is_schema_class? && value.is_a?(Hash)
       return field.type.new(value)
     else
       return value
@@ -9,7 +9,7 @@ module FieldHelpers
   end
 
   def self.field_type_to_generic(field, value)
-    if field.type.is_schema_class?
+    if field.type.is_schema_class? && value.is_a?(field.type)
       return value.to_object
     else
       return value
