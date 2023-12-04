@@ -1,5 +1,3 @@
-
-
 class SchemaType
 
   class Boolean
