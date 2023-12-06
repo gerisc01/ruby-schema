@@ -58,7 +58,7 @@ class Schema
         key = field_def['key'] || field_def[:key]
       end
       # Convert fields from a hash of properties to a field object
-      converted_fields.push(!key.is_a?(Field) ? Field.from_object(key, field_def) : key)
+      converted_fields.push(!key.is_a?(Field) ? Field.from_schema_object(key, field_def) : key)
     end
     @fields = converted_fields
   end

@@ -26,7 +26,7 @@ class Field
     raise Schema::ValidationError.new("Field subtype must be a class") unless subtype.is_a?(Class) || subtype.nil?
   end
 
-  def to_object
+  def to_schema_object
     {
       'key' => key,
       'display_name' => display_name,
@@ -36,7 +36,11 @@ class Field
     }
   end
 
-  def self.from_object(key, obj)
+  def self.from_schema_object(key, obj = nil)
+    if obj.nil?
+      obj = key
+      key = obj['key'] || obj[:key]
+    end
     field = Field.new
     field.key = key
     field.display_name = obj['display_name'] || obj[:display_name]

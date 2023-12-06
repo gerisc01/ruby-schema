@@ -21,7 +21,7 @@ module HashFields
       # Add value to hash
       self.json = {} if self.json.nil?
       self.json[field.key] = {} if self.json[field.key].nil?
-      self.json[field.key][key] = value
+      self.json[field.key] = self.json[field.key].merge(FieldHelpers.field_type_to_generic(field, {key => value}))
     end
   end
 

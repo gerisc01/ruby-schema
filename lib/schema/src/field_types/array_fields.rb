@@ -22,7 +22,7 @@ module ArrayFields
       # Add value to array
       self.json = {} if self.json.nil?
       self.json[field.key] = [] if self.json[field.key].nil?
-      self.json[field.key] << value
+      self.json[field.key] += FieldHelpers.field_type_to_generic(field, [value])
     end
   end
 

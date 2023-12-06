@@ -7,8 +7,8 @@ module BaseFields
     clazz.attr_accessor :json
     init(clazz)
     validate(clazz)
-    from_object(clazz)
-    to_object(clazz)
+    from_schema_object(clazz)
+    to_schema_object(clazz)
     merge(clazz)
     def_equals(clazz)
   end
@@ -25,6 +25,7 @@ module BaseFields
   
   def self.init(clazz)
     clazz.define_method(:initialize) do |input = nil|
+      raise Schema::ValidationError.new("Input must be a hash") unless input.nil? || input.is_a?(Hash)
       self.json = input.nil? ? {} : input
       self.json["id"] = SecureRandom.uuid if json["id"].nil?
     end
@@ -36,14 +37,14 @@ module BaseFields
     end
   end
   
-  def self.from_object(clazz)
-    clazz.define_singleton_method(:from_object) do |input|
+  def self.from_schema_object(clazz)
+    clazz.define_singleton_method(:from_schema_object) do |input|
       return self.new(input)
     end
   end
   
-  def self.to_object(clazz)
-    clazz.define_method(:to_object) do
+  def self.to_schema_object(clazz)
+    clazz.define_method(:to_schema_object) do
       return self.json
     end
   end

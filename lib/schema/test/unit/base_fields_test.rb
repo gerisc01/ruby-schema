@@ -57,13 +57,13 @@ class BaseFieldsTest < Minitest::Test
     assert instance.validate
   end
 
-  def test_to_from_object
+  def test_to_from_schema_object
     TestHelpers.create_schema_with_fields(@test_class, {'test_field' => {:required => false}})
     input = {'id' => '1', 'test_field' => 'Something'}
     instance = @test_class.new(input)
     
-    json = instance.to_object
-    object = @test_class.from_object(json)
+    json = instance.to_schema_object
+    object = @test_class.from_schema_object(json)
 
     assert_equal input, json
     assert_equal instance, object

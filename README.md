@@ -48,7 +48,7 @@ instance.id = '12'
 instance.name = 'A Name'
 instance.add_number(2)
 instance.upsert_squares_table('2', 4)
-puts "#{instance.to_object}"
+puts "#{instance.to_schema_object}"
 ##stdout {'id' => '12', 'name' => 'A Name', numbers: [2], squares_table: {'2' => 4}}
 ```
 
@@ -99,7 +99,7 @@ existing_item = Item.new({'id' => '123', 'name' => 'Existing Item'})
 instance.item = value
 # Item.exist?('123') is called. Because it returns true for this item...
 # the item is just transformed down to it's id after being set
-instance.to_object
+instance.to_schema_object
 ##stdout {'id' => '1', 'item' => '123'}
 
 new_item = Item.new({'id' => '456', 'name' => 'New Item'})
@@ -107,13 +107,13 @@ instance.item = new_item
 # Item.exist?('456') is called. Because it returns false for this item...
 # new_item.save! is called...
 # the item is just transformed down to it's id after being set
-instance.to_object
+instance.to_schema_object
 ##stdout {'id' => '1', 'item' => '456'}
 
 instance.item = '789'
 # Item.exist?('789') is called. Because it returns true for this item...
 # nothing is changed because the value is already just the reference to the item's id
-instance.to_object
+instance.to_schema_object
 ##stdout {'id' => '1', 'item' => '789'}
 
 existing_array_item = Item.new({'id' => 'abc', 'name' => 'Existing Item'})

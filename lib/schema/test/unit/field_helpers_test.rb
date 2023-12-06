@@ -15,7 +15,7 @@ class FieldHelpersTest < Minitest::Test
   end
 
   def test_field_conversion_string
-    field = Field.from_object('a-key', {:type => String})
+    field = Field.from_schema_object('a-key', {:type => String})
     initial_value = "A String"
     field_type = FieldHelpers.generic_to_field_type(field, initial_value)
     assert_equal "A String", field_type
@@ -25,7 +25,7 @@ class FieldHelpersTest < Minitest::Test
   end
 
   def test_field_conversion_integer
-    field = Field.from_object('a-key', {:type => Integer})
+    field = Field.from_schema_object('a-key', {:type => Integer})
     initial_value = 25
     field_type = FieldHelpers.generic_to_field_type(field, initial_value)
     assert_equal 25, field_type
@@ -36,7 +36,7 @@ class FieldHelpersTest < Minitest::Test
 
   def test_field_conversion_schema_ref
     TestHelpers.create_schema_with_fields(@test_class, {'test_field' => {:required => false}})
-    field = Field.from_object('a-key', {:type => @test_class})
+    field = Field.from_schema_object('a-key', {:type => @test_class})
     initial_value = {'id' => '1', 'test_field' => 'Something'}
     field_type = FieldHelpers.generic_to_field_type(field, initial_value)
     assert_equal @test_class.new(initial_value), field_type

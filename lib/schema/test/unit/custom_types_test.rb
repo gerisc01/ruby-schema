@@ -11,7 +11,7 @@ class CustomTypesTest < Minitest::Test
   end
 
   def test_field_boolean
-    field = Field.from_object("field", {:type => SchemaType::Boolean})
+    field = Field.from_schema_object("field", {:type => SchemaType::Boolean})
     # true success
     field.validate(true)
     # false success
@@ -23,7 +23,7 @@ class CustomTypesTest < Minitest::Test
   end
 
   def test_field_date
-    field = Field.from_object("field", {:type => SchemaType::Date})
+    field = Field.from_schema_object("field", {:type => SchemaType::Date})
     # date object success
     field.validate(Date.new)
     # date string success

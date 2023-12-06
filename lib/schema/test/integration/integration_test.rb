@@ -36,7 +36,7 @@ class IntegrationTest < Minitest::Test
     assert_equal 'Test1', instance.name
     assert_equal [2], instance.numbers
     assert_equal input['squares_table'] , instance.squares_table
-    assert_equal input, instance.to_object
+    assert_equal input, instance.to_schema_object
   end
 
   def test_required

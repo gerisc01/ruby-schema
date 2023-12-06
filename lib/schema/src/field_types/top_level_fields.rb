@@ -11,7 +11,7 @@ module TopLevelFields
   end
 
   def self.add_id_fields(clazz)
-    id_field = Field.from_object('id', {:required => true, :type => String})
+    id_field = Field.from_schema_object('id', {:required => true, :type => String})
     field_getter(clazz, id_field)
     field_setter(clazz, id_field)
   end
@@ -30,6 +30,7 @@ module TopLevelFields
         if field.subtype.nil?
           value = TypeRef.process_type_ref(value, field.type)
         else
+          # TODO: I think this would be broken for hash types
           value = value.map { |v| TypeRef.process_type_ref(v, field.subtype) }
         end
       end
