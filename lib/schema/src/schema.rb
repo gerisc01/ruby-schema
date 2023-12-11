@@ -43,7 +43,7 @@ class Schema
         v = instance.public_send(field.key) if instance.respond_to?(field.key)
         field.validate(v)
       rescue Schema::ValidationError => e
-        raise Schema::ValidationError, "Invalid #{@display_name || @key}: #{e.message}"
+        raise Schema::ValidationError, "Invalid #{@display_name || @key} (field: #{field.key}): #{e.message}"
       end
     end
   end

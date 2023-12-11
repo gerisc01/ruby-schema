@@ -2,11 +2,11 @@ module FieldHelpers
 
   def self.generic_to_field_type(field, value)
     if field.subtype.respond_to?(:from_schema_object) && field.type == Hash
-      return value.map { |k,v| [k, field.subtype.from_schema_object(v)] }.to_h
+      return value.map { |k,v| [k, v.is_a?(Hash) ? field.subtype.from_schema_object(v) : v] }.to_h
     elsif field.type.respond_to?(:from_schema_object) && value.is_a?(Hash)
       return field.type.from_schema_object(value)
     elsif field.subtype.respond_to?(:from_schema_object) && value.respond_to?(:map)
-      return value.map { |v| field.subtype.from_schema_object(v) }
+      return value.map { |v| v.is_a?(Hash) ? field.subtype.from_schema_object(v) : v}
     else
       return value
     end
@@ -16,9 +16,9 @@ module FieldHelpers
     if value.respond_to?(:to_schema_object) && value.is_a?(field.type)
       return convert_schema_object(field, value)
     elsif field.subtype.respond_to?(:from_schema_object) && value.is_a?(Hash)
-      return value.map { |k,v| [k, convert_schema_object(field, v)] }.to_h
+      return value.map { |k,v| [k, v.respond_to?(:to_schema_object) ? convert_schema_object(field, v) : v] }.to_h
     elsif field.subtype.respond_to?(:from_schema_object) && value.respond_to?(:map)
-      return value.map { |v| convert_schema_object(field, v) }
+      return value.map { |v| v.respond_to?(:to_schema_object) ? convert_schema_object(field, v) : v }
     else
       return value
     end
