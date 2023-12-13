@@ -8,8 +8,11 @@ class Object
     false
   end
 
-  def apply_schema(schema)
-    schema.apply(self)
+  # If an existing apply_schema method exists, don't overwrite it
+  unless method_defined? :apply_schema
+    def apply_schema(schema)
+      schema.apply(self)
+    end
   end
 end
 
