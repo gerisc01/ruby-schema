@@ -33,7 +33,7 @@ module ArrayFields
       # Validation and type ref processing. Type ref processing is here
       # so that an item can be removed by either an id or it's reference.
       field.validate_subtype(value)
-      value = TypeRef.process_type_ref(value, field.type_ref) if field.type_ref
+      value = TypeRef.process_type_ref(value, field.subtype) if field.type_ref
       # Remove value from array
       self.json[field.key].delete(value)
     end
