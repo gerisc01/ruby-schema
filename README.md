@@ -157,7 +157,7 @@ end
 
 # Build and Install
 ```bash
-gem build schema.gemspec
+gem build ruby-schema.gemspec
 // Install whatever the current version is
-gem install schema-0.1.1.gem
+gem install ruby-schema-0.1.1.gem
 ```

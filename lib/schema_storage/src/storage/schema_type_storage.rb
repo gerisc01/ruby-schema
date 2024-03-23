@@ -24,8 +24,10 @@ class SchemaTypeStorage
     @cache.insert(table, id, obj)
     persist_without_all_ids(table)
     obj_ids = @cache.get(table, 'all_ids')
-    obj_ids.push(id)
-    @cache.insert(table, 'all_ids', obj_ids)
+    unless obj_ids.include?(id)
+      obj_ids.push(id)
+      @cache.insert(table, 'all_ids', obj_ids)
+    end
   end
 
   def delete(table, id)
