@@ -59,6 +59,14 @@ class HashFieldsTest < Minitest::Test
     assert_equal updated_strings, instance.strings
   end
 
+  def test_setter_type_ref_clear_non_required
+    @top_level_class = Class.new
+    TestHelpers.create_schema_with_fields(@top_level_class,
+    {'ref' =>{:type => Hash,:subtype => @test_class, :type_ref => true}})
+    top_level_instance = @top_level_class.new({'ref' => {'key1' => '1', 'key2' => '2'}})
+    top_level_instance.ref = nil
+  end
+
   def test_setter_wrong_type
     instance = @test_class.new
     assert_raises(Schema::ValidationError) do

@@ -26,7 +26,7 @@ module TopLevelFields
     clazz.define_method("#{field.key}=".to_sym) do |value|
       # Validation and type ref processing
       field.validate(value)
-      if field.type_ref
+      if field.type_ref && !value.nil?
         if field.subtype.nil?
           value = TypeRef.process_type_ref(value, field.type)
         else
