@@ -2,7 +2,7 @@ require_relative './helpers/validators'
 
 class Field
 
-  attr_accessor :key, :display_name, :type, :subtype, :required, :type_ref
+  attr_accessor :key, :display_name, :type, :subtype, :required, :type_ref, :extra_attrs
 
   def validate(value)
     Validators.required(self, value)
@@ -27,13 +27,16 @@ class Field
   end
 
   def to_schema_object
-    {
+    result = {
       'key' => key,
       'display_name' => display_name,
       'type' => type,
       'subtype' => subtype,
       'required' => required,
+      'type_ref' => type_ref
     }
+    result.merge!(extra_attrs) if extra_attrs
+    result
   end
 
   def self.from_schema_object(key, obj = nil)
@@ -48,6 +51,7 @@ class Field
     field.subtype = Field.from_type(obj, 'subtype')
     field.required = Field.from_boolean(obj, 'required')
     field.type_ref = Field.from_boolean(obj, 'type_ref')
+    field.extra_attrs = obj.reject { |k, v| ['key', 'display_name', 'type', 'subtype', 'required', 'type_ref'].include?(k.to_s) }
     field.validate_def
     return field
   end
