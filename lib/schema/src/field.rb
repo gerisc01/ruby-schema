@@ -8,6 +8,7 @@ class Field
     Validators.required(self, value)
     Validators.type(self, value)
     Validators.subtype(self, value)
+    Validators.field_value_validation(self, value)
   end
 
   def validate_subtype(value)
@@ -24,6 +25,9 @@ class Field
     raise Schema::ValidationError.new("Field type_ref must be a boolean") unless type_ref.is_a?(TrueClass) || type_ref.is_a?(FalseClass) || type_ref.nil?
     raise Schema::ValidationError.new("Field type must be a class") unless type.is_a?(Class) || type.nil?
     raise Schema::ValidationError.new("Field subtype must be a class") unless subtype.is_a?(Class) || subtype.nil?
+    raise Schema::ValidationError.new("Field extra_attrs must be a hash") unless extra_attrs.is_a?(Hash) || extra_attrs.nil?
+    field_type = subtype.nil? ? type : subtype
+    field_type.field_def_validation(self) if field_type.respond_to?(:field_def_validation)
   end
 
   def to_schema_object

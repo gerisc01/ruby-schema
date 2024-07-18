@@ -37,6 +37,13 @@ module Validators
     raise Schema::ValidationError, "'#{field.key}' is expecting an object or id matching the type ref of type with an existing id '#{type}' but found '#{value.class.to_s}':'#{value_id}'"
   end
 
+  def self.field_value_validation(field, value)
+    field_type = field.subtype.nil? ? field.type : field.subtype
+    if field_type.respond_to?(:field_value_validation)
+      field_type.field_value_validation(field, value)
+    end
+  end
+
   ###################################################################
   #                       HELPER METHODS                            #
   ###################################################################
