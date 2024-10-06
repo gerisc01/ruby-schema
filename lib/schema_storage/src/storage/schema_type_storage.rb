@@ -14,13 +14,27 @@ class SchemaTypeStorage
     @cache.get(table, id)
   end
 
-  def list(table)
+  def list(table, since = nil)
     load_cache_from_db(table) unless @cache.exist?(table)
-    @cache.get(table, 'all_ids').map { |id| @cache.get(table, id) }
+    objects = @cache.get(table, 'all_ids')
+                   .map { |id| @cache.get(table, id) }
+    result = []
+    if since.nil?
+      result = objects
+    else
+      objects.each do |obj|
+        obj['updated_at'] = Time.now.utc.iso8601 if obj['updated_at'].nil?
+        result << obj if obj['updated_at'] > since
+      end
+    end
+    result
   end
 
   def save(table, id, obj)
+    return if obj.nil?
+
     load_cache_from_db(table) unless @cache.exist?(table)
+    obj['updated_at'] = Time.now.utc.iso8601
     @cache.insert(table, id, obj)
     persist_without_all_ids(table)
     obj_ids = @cache.get(table, 'all_ids')
