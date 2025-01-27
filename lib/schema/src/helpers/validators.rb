@@ -39,6 +39,9 @@ module Validators
 
   def self.field_value_validation(field, value)
     field_type = field.subtype.nil? ? field.type : field.subtype
+    # If the type or value is nil, it passes (relying on required validation to catch nil values)
+    return if field_type.nil? || value.nil?
+    # If it's not empty, check the custom validation logic
     if field_type.respond_to?(:field_value_validation)
       field_type.field_value_validation(field, value)
     end

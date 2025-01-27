@@ -68,6 +68,12 @@ class CustomTypesTest < Minitest::Test
     instance_success.validate
   end
 
+  def test_field_not_required
+    TestHelpers.create_schema_with_fields(@test_class, { 'custom' => {:type => TestCustomType, :test => 'valid'} })
+    instance_success = @test_class.new({})
+    instance_success.validate
+  end
+
   def test_custom_type_match_validation_notype
     TestHelpers.create_schema_with_fields(@test_class, { 'custom' => {:required => true} })
     instance = @test_class.new({'custom' => 'anything'})
