@@ -23,8 +23,8 @@ module CrudMethods
   end
 
   def self.get(clazz, storage)
-    clazz.define_singleton_method(:get) do |id|
-      json = storage.get(CrudMethods.get_table(clazz), id)
+    clazz.define_singleton_method(:get) do |id, opts = {}|
+      json = storage.get(CrudMethods.get_table(clazz), id, opts)
       clazz.new(json) unless json.nil?
     end
   end
@@ -36,8 +36,8 @@ module CrudMethods
   end
 
   def self.list(clazz, storage)
-    clazz.define_singleton_method(:list) do
-      json_list = storage.list(CrudMethods.get_table(clazz))
+    clazz.define_singleton_method(:list) do |opts = {}|
+      json_list = storage.list(CrudMethods.get_table(clazz), opts)
       json_list.map { |json| clazz.new(json) }
     end
   end

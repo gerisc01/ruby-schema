@@ -43,5 +43,14 @@ class SchemaTypeStorageTest < Minitest::Test
     assert_equal [@item1, @item2], @storage.list('test')
   end
 
+  def test_list_include_deleted_success
+    assert_nil @storage.get('test',@item1['id'])
+    assert_nil @storage.get('test',@item2['id'])
+    @storage.save('test', @item1['id'], @item1)
+    @storage.save('test', @item2['id'],@item2)
+    @storage.delete('test', @item1['id'])
+    assert_equal [@item1, @item2], @storage.list('test', {include_deleted: true})
+    assert_equal [@item2], @storage.list('test', {})
+  end
 
 end

@@ -56,7 +56,7 @@ class SchemaTypeStorageUnitTest < Minitest::Test
     mock_local_db('items', items)
 
     storage = SchemaTypeStorage.new('unit_test')
-    items = storage.list('items', '2024-10-06T12:35:00Z')
+    items = storage.list('items', {since: '2024-10-06T12:35:00Z'})
     assert_equal 0, items.length
   end
 
@@ -68,7 +68,7 @@ class SchemaTypeStorageUnitTest < Minitest::Test
     mock_local_db('items', items)
 
     storage = SchemaTypeStorage.new('unit_test')
-    items = storage.list('items', '2024-10-01T12:35:00Z')
+    items = storage.list('items', {since: '2024-10-01T12:35:00Z'})
     assert_equal 2, items.length
   end
 
@@ -80,7 +80,7 @@ class SchemaTypeStorageUnitTest < Minitest::Test
     mock_local_db('items', items)
 
     storage = SchemaTypeStorage.new('unit_test')
-    items = storage.list('items', '2024-10-03T12:35:00Z')
+    items = storage.list('items', {since: '2024-10-03T12:35:00Z'})
     assert_equal 1, items.length
   end
 
@@ -92,7 +92,7 @@ class SchemaTypeStorageUnitTest < Minitest::Test
     mock_local_db('items', items)
 
     storage = SchemaTypeStorage.new('unit_test')
-    items = storage.list('items', '2024-10-04T12:35:00Z')
+    items = storage.list('items', {since: '2024-10-04T12:35:00Z'})
     assert_equal 1, items.length
   end
 
@@ -106,9 +106,73 @@ class SchemaTypeStorageUnitTest < Minitest::Test
     mock_local_db('items', items)
 
     storage = SchemaTypeStorage.new('unit_test')
-    items = storage.list('items', '2024-10-04T12:35:00Z')
+    items = storage.list('items', {since: '2024-10-04T12:35:00Z'})
     assert_equal 1, items.length
     assert_equal Time.utc(2024, 10, 5, 12, 35).iso8601, items[0]['updated_at']
+  end
+
+  def test_list_include_deleted_and_since
+    Time.stubs(:now).returns(Time.utc(2024, 10, 5, 12, 35))
+
+    items = {
+      '1' => {'id' => '1', 'name' => 'One', 'key' => 'one', 'updated_at' => Time.utc(2024,10, 3, 12, 35).iso8601, 'deleted' => true},
+      '2' => {'id' => '2', 'name' => 'Two', 'key' => 'two', 'updated_at' => Time.utc(2024,10, 5, 12, 35).iso8601, 'deleted' => true}
+    }
+    mock_local_db('items', items)
+
+    storage = SchemaTypeStorage.new('unit_test')
+    items = storage.list('items', {since: '2024-10-04T12:35:00Z', include_deleted: true})
+    assert_equal 1, items.length
+    assert_equal Time.utc(2024, 10, 5, 12, 35).iso8601, items[0]['updated_at']
+  end
+
+  def test_get_no_since
+    items = {
+      '1' => {'id' => '1', 'name' => 'One', 'key' => 'one', 'updated_at' => Time.utc(2024,10, 2, 12, 35).iso8601},
+      '2' => {'id' => '2', 'name' => 'Two', 'key' => 'two', 'updated_at' => Time.utc(2024, 10, 5, 12, 35).iso8601}
+    }
+    mock_local_db('items', items)
+
+    storage = SchemaTypeStorage.new('unit_test')
+    item = storage.get('items', '2')
+    assert_equal '2', item['id']
+  end
+
+  def test_get_since_date_before_include_deleted
+    items = {
+      '1' => {'id' => '1', 'name' => 'One', 'key' => 'one', 'updated_at' => Time.utc(2024,10, 2, 12, 35).iso8601},
+      '2' => {'id' => '2', 'name' => 'Two', 'key' => 'two', 'updated_at' => Time.utc(2024, 10, 5, 12, 35).iso8601, 'deleted' => true}
+    }
+    mock_local_db('items', items)
+
+    storage = SchemaTypeStorage.new('unit_test')
+    item = storage.get('items', '2', {since: '2024-10-04T12:35:00Z', include_deleted: true})
+    assert_equal '2', item['id']
+    assert_equal true, item['deleted']
+  end
+
+  def test_get_since_date_before
+    items = {
+      '1' => {'id' => '1', 'name' => 'One', 'key' => 'one', 'updated_at' => Time.utc(2024,10, 2, 12, 35).iso8601},
+      '2' => {'id' => '2', 'name' => 'Two', 'key' => 'two', 'updated_at' => Time.utc(2024, 10, 5, 12, 35).iso8601, 'deleted' => true}
+    }
+    mock_local_db('items', items)
+
+    storage = SchemaTypeStorage.new('unit_test')
+    item = storage.get('items', '2', {since: '2024-10-04T12:35:00Z'})
+    assert_nil item
+  end
+
+  def test_get_since_date_after
+    items = {
+      '1' => {'id' => '1', 'name' => 'One', 'key' => 'one', 'updated_at' => Time.utc(2024,10, 2, 12, 35).iso8601},
+      '2' => {'id' => '2', 'name' => 'Two', 'key' => 'two', 'updated_at' => Time.utc(2024, 10, 5, 12, 35).iso8601}
+    }
+    mock_local_db('items', items)
+
+    storage = SchemaTypeStorage.new('unit_test')
+    item = storage.get('items', '2', {since: '2024-10-06T12:35:00Z'})
+    assert_nil item
   end
 
   def mock_local_db(table, data)

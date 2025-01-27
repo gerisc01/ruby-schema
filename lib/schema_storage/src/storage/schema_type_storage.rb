@@ -1,4 +1,5 @@
 require 'json'
+require 'time'
 require_relative './local_cache'
 require_relative './local_files_db'
 
@@ -9,23 +10,35 @@ class SchemaTypeStorage
     @db = LocalFilesDb.new(file_path)
   end
 
-  def get(table, id)
+  def get(table, id, opts = {})
     load_cache_from_db(table) unless @cache.exist?(table)
-    @cache.get(table, id)
+    result = @cache.get(table, id)
+    if !result.nil? && result.is_a?(Hash)
+      result['updated_at'] = Time.now.utc.iso8601 if result['updated_at'].nil?
+      unless (since = opts[:since]).nil?
+        result = nil if result['updated_at'] < since
+      end
+      result = nil if include_deleted?(opts) && !result.nil? && result['deleted']
+    end
+    result
   end
 
-  def list(table, since = nil)
+  def list(table, opts = {})
     load_cache_from_db(table) unless @cache.exist?(table)
     objects = @cache.get(table, 'all_ids')
                    .map { |id| @cache.get(table, id) }
     result = []
-    if since.nil?
+    if (since = opts[:since]).nil?
       result = objects
     else
       objects.each do |obj|
         obj['updated_at'] = Time.now.utc.iso8601 if obj['updated_at'].nil?
         result << obj if obj['updated_at'] > since
       end
+    end
+
+    if include_deleted?(opts)
+      result = result.reject { |obj| obj['deleted'] }
     end
     result
   end
@@ -46,11 +59,11 @@ class SchemaTypeStorage
 
   def delete(table, id)
     load_cache_from_db(table) unless @cache.exist?(table)
-    @cache.clear(table, id)
+    obj = @cache.get(table, id)
+    obj['updated_at'] = Time.now.utc.iso8601
+    obj['deleted'] = true
+    @cache.insert(table, id, obj)
     persist_without_all_ids(table)
-    obj_ids = @cache.get(table, 'all_ids')
-    obj_ids.delete(id)
-    @cache.insert(table, 'all_ids', obj_ids)
   end
 
   def clear_cache
@@ -83,6 +96,10 @@ class SchemaTypeStorage
     table_cache = @cache.get(table)
     table_cache = {} if table_cache.nil?
     @db.persist(table, table_cache.reject { |k, v| k == 'all_ids'})
+  end
+
+  def include_deleted?(opts)
+    opts[:include_deleted].nil? || opts[:include_deleted] == false
   end
 
 end
