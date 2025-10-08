@@ -30,10 +30,11 @@ module Validators
   end
 
   def self.type_ref_exists(field, value)
-    return true if !field.type_ref
     type = field.subtype.nil? ? field.type : field.subtype
-    value_id = value.is_a?(String) ? value : value.id
-    return true if type.respond_to?(:exist?) && type.exist?(value_id)
+    ## If the value is a string, the type ref must exist
+    if value.is_a?(String)
+      return type.respond_to?(:exist?) && type.exist?(value)
+    end
     raise Schema::ValidationError, "'#{field.key}' is expecting an object or id matching the type ref of type with an existing id '#{type}' but found '#{value.class.to_s}':'#{value_id}'"
   end
 
@@ -63,7 +64,7 @@ module Validators
 
   def self.subtype_collection_value_check(field, value, hash_key = nil)
     return if general_type_check(field.subtype, value)
-    return if type_ref_exists(field, value)
+    return if field.type_ref && type_ref_exists(field, value)
     message = "'#{field.key}' is expecting a collection containing "
     message += "type refs of ids or objects for " if field.type_ref
     message += "'#{field.subtype}' types but found '#{value.class.to_s}'"

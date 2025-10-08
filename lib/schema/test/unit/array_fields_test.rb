@@ -71,4 +71,11 @@ class ArrayFieldsTest < Minitest::Test
     end
   end
 
+  def test_validate_wrong_type
+    instance = @test_class.new({ 'ints' => ['a', 'b', 'c'], 'strings' => ['a', 'b', 'c']})
+    assert_raises(Schema::ValidationError) do
+      instance.validate
+    end
+  end
+
 end

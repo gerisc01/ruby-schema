@@ -1,5 +1,3 @@
-module Ruby
-  module Schema
-    VERSION = "0.6.1"
-  end
+module RubySchema
+  VERSION = "0.6.2"
 end

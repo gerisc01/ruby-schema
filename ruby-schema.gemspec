@@ -2,7 +2,7 @@ require_relative 'version'
 
 Gem::Specification.new do |spec|
   spec.name          = "ruby-schema"
-  spec.version       = Ruby::Schema::VERSION
+  spec.version       = RubySchema::VERSION
   spec.authors       = ["Scott Gerike"]
   spec.email         = ["scott.gerike@gmail.com"]
 
